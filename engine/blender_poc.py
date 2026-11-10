@@ -4,7 +4,7 @@ from mathutils import Vector
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 for datablocks in (bpy.data.meshes,bpy.data.curves,bpy.data.cameras,bpy.data.lights): pass
 scene=bpy.context.scene
-scene.render.engine='BLENDER_EEVEE_NEXT'
+available_engines = {item.identifier for item in scene.render.bl_rna.properties['engine'].enum_items}\nscene.render.engine = 'BLENDER_EEVEE' if 'BLENDER_EEVEE' in available_engines else ('BLENDER_EEVEE_NEXT' if 'BLENDER_EEVEE_NEXT' in available_engines else 'BLENDER_WORKBENCH')
 scene.render.resolution_x=480; scene.render.resolution_y=854; scene.render.resolution_percentage=100
 scene.render.fps=12; scene.frame_start=1; scene.frame_end=96
 scene.render.image_settings.file_format='PNG'
