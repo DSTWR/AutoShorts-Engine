@@ -1,23 +1,20 @@
-# AutoShorts Engine
+# DSTWR AutoShorts Engine
 
-A zero-budget-oriented 2D short-film renderer running on GitHub Actions without a GPU.
+## Current engine: Blender
 
-## Current production pass
-- Five storyboarded shots with distinct color grades and scene compositions.
-- A recurring illustrated host with pose changes and facial animation.
-- A designed environment with a night window, desk, cup, phone, lamp, shadows and focus cues.
-- Arabic captions and narration, vertical 9:16 output at 720x1280 / 24 FPS.
-- FFmpeg H.264 output artifact.
+This repository now uses Blender as its only animation/rendering engine. The legacy Pillow drawing renderer, Arabic eSpeak narration pipeline, and their workflow have been removed.
 
-## Build
-Open Actions → AutoShorts - Build Demo → Run workflow. The output is uploaded as `autoshorts-demo`.
+### Pipeline
+1. Blender runs headlessly on an Ubuntu GitHub Actions runner.
+2. A scripted 3D scene builds an original articulated character, stage, lighting, props and camera.
+3. Keyframed motion creates an animated physical-comedy sequence.
+4. FFmpeg encodes the rendered frames into a vertical MP4.
+5. GitHub Actions uploads the MP4 as an artifact.
 
-## Honest limitations
-This is a procedural 2D animation engine, not generative video. The character is illustrated by vector-like drawing primitives, not a hand-drawn frame animation rig. Arabic narration still depends on the locally installed eSpeak NG voice and is synthetic. This workflow does not publish to YouTube. GitHub-hosted runners do not provide a free dedicated GPU.
+### Run
+GitHub → Actions → **Blender Animation Engine - Proof of Concept** → Run workflow.
 
-## Layout
-- `engine/story.py`: storyboard and narration.
-- `engine/renderer.py`: scene art, character poses and frame renderer.
-- `engine/voice.py`: offline speech.
-- `engine/build.py`: FFmpeg assembly.
-- `.github/workflows/build-short.yml`: manual/scheduled build.
+### Current status and limitations
+This is the first Blender engine validation, not yet a finished viral-video production system. The current scene is a technical animation test. Character design, expressive acting, richer environments, story generation, sound design, quality checks and channel publishing remain future production stages.
+
+The workflow does not publish to YouTube. No dedicated GPU is assumed; render performance depends on the GitHub-hosted CPU runner.
