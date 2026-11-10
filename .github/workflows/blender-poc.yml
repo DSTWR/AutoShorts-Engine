@@ -1,0 +1,31 @@
+name: Blender Animation Engine - Proof of Concept
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender and FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y blender ffmpeg
+          blender --version
+      - name: Render original 3D character animation
+        run: |
+          mkdir -p output
+          blender --background --python engine/blender_poc.py
+      - name: Assemble vertical MP4
+        run: |
+          ffmpeg -y -framerate 12 -i rendered/frame_%04d.png \
+            -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,format=yuv420p" \
+            -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -movflags +faststart output/blender-animation-poc.mp4
+      - name: Upload proof of concept
+        uses: actions/upload-artifact@v4
+        with:
+          name: blender-animation-poc
+          path: output/blender-animation-poc.mp4
+          retention-days: 7
