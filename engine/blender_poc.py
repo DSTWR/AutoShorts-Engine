@@ -4,9 +4,14 @@ from mathutils import Vector
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 for datablocks in (bpy.data.meshes,bpy.data.curves,bpy.data.cameras,bpy.data.lights): pass
 scene=bpy.context.scene
-available_engines = {item.identifier for item in scene.render.bl_rna.properties['engine'].enum_items}
-scene.render.engine = 'BLENDER_EEVEE' if 'BLENDER_EEVEE' in available_engines else ('BLENDER_EEVEE_NEXT' if 'BLENDER_EEVEE_NEXT' in available_engines else 'BLENDER_WORKBENCH')
-scene.render.resolution_x=480; scene.render.resolution_y=854; scene.render.resolution_percentage=100
+scene.render.engine='BLENDER_WORKBENCH'
+scene.render.resolution_x=360; scene.render.resolution_y=640; scene.render.resolution_percentage=100
+# Workbench is intentionally used for CPU-only Actions runners: it avoids software-EGL Eevee lighting costs.
+shading=scene.display.shading
+shading.type='SOLID'; shading.light='STUDIO'; shading.color_type='MATERIAL'
+shading.show_shadows=False; shading.show_cavity=True
+shading.cavity_type='WORLD'; shading.curvature_ridge_factor=1.25; shading.curvature_valley_factor=1.0
+shading.show_specular_highlight=True
 scene.render.fps=12; scene.frame_start=1; scene.frame_end=96
 scene.render.image_settings.file_format='PNG'
 scene.render.film_transparent=False
@@ -33,7 +38,7 @@ floor=cube('Stage floor',(0,0,-4.1),(11,8,.25),mat('Floor',(.035,.07,.11)),.08)
 bpy.ops.object.camera_add(location=(0,-15,0)); cam=bpy.context.object; cam.rotation_euler=(math.radians(90),0,0); cam.data.type='ORTHO'; cam.data.ortho_scale=10.8; scene.camera=cam
 def area(loc,power,size,color):
  bpy.ops.object.light_add(type='AREA',location=loc); l=bpy.context.object; l.data.energy=power; l.data.shape='DISK'; l.data.size=size; l.data.color=color; l.rotation_euler=(Vector((0,0,0))-l.location).to_track_quat('-Z','Y').to_euler()
-area((4,-7,6),950,7,(.45,.85,1)); area((-5,-3,1),700,5,(1,.35,.12)); area((0,3,4),1100,4,(.1,.7,1))
+
 # Character rig made from linked pivot empties and articulated parts
 root=bpy.data.objects.new('CHARACTER_ROOT',None); scene.collection.objects.link(root)
 def parent(o,p,loc=None):
