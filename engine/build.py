@@ -23,10 +23,10 @@ def main():
     video=OUT/"autoshorts-demo.mp4"
     cmd=["ffmpeg","-y","-framerate",str(FPS),"-i",str(FRAMES/"frame_%05d.jpg")]
     if voice_ok:
-        cmd += ["-i",str(audio),"-c:a","aac","-b:a","160k","-shortest"]
+        cmd += ["-i",str(audio),"-c:a","aac","-b:a","160k"]
     else:
-        cmd += ["-f","lavfi","-i","anullsrc=r=44100:cl=stereo","-c:a","aac","-shortest"]
-    cmd += ["-c:v","libx264","-preset","medium","-crf","19","-pix_fmt","yuv420p","-r",str(FPS),"-movflags","+faststart",str(video)]
+        cmd += ["-f","lavfi","-i","anullsrc=r=44100:cl=stereo","-c:a","aac"]
+    cmd += ["-t",str(duration),"-c:v","libx264","-preset","medium","-crf","19","-pix_fmt","yuv420p","-r",str(FPS),"-movflags","+faststart",str(video)]
     run(cmd)
     metadata={"title":STORY["title"],"file":str(video.relative_to(ROOT)),"duration_seconds":duration,
               "voice_generated":voice_ok,"format":"9:16","resolution":"720x1280",
