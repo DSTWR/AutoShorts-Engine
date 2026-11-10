@@ -16,10 +16,13 @@ jobs:
           blender --version
       - name: Render original 3D character animation
         run: |
-          mkdir -p output
+          set -euo pipefail
+          mkdir -p output rendered
           blender --background --python engine/blender_poc.py
+          test -n "$(find rendered -maxdepth 1 -name 'frame_*.png' -print -quit)" || { echo 'Blender did not produce rendered frames'; exit 1; }
       - name: Assemble vertical MP4
         run: |
+          set -euo pipefail
           ffmpeg -y -framerate 12 -i rendered/frame_%04d.png \
             -vf "scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,format=yuv420p" \
             -c:v libx264 -preset veryfast -crf 21 -pix_fmt yuv420p -movflags +faststart output/blender-animation-poc.mp4
